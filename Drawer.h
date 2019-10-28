@@ -4,6 +4,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPainter>
+#include <Qpixmap>
 
 class MainWindow : public QMainWindow
 {
