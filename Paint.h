@@ -2,12 +2,10 @@
 #include "Drawer.h"
 #include <math.h>
 
-class Paint
+class Paint//画图类
 {
 	QPainter *painter;
-	//QPixmap *pix;
 	QPen pen;
-	//QColor color;
 public:
 	Paint(QPainter *pa);//构造函数
 	void setcolor(int r, int g, int b);//设置画笔颜色
