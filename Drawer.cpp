@@ -1,29 +1,35 @@
 #include "Drawer.h"
-#include "Paint.h"
 
-MainWindow::MainWindow(QWidget *parent)
-	: QMainWindow(parent)
+Drawer::Drawer(QWidget *parent)
+	: QMainWindow(parent),
+	ui(new Ui::DrawerClass)
 {
+	ui->setupUi(this);
+	setFixedSize(1000,800);//固定大小
+	/*QPalette palette(ui->myCanvas->palette());//改变背景色
+	palette.setColor(QPalette::Background, Qt::white);
+	ui->myCanvas->setPalette(palette);*/
 
-	resize(QSize(800, 600));//设置窗口大小
-	/*QPixmap pixmap(108 * 2, 192 * 2 - 100);
-	//pixmap.fill(Qt::transparent);
-	QPainter painter(&pixmap);  //QPainter对象
-	painter.drawLine(QPointF(0, 0), QPointF(100, 100)); //注意：不包括工具栏，坐标就是窗口的起点
-	pixmap.save("2.bmp");*/
+	QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();//添加
+	shadow->setColor(Qt::black);
+	shadow->setBlurRadius(8);
+	shadow->setOffset(0);
+	ui->Canvas->setGraphicsEffect(shadow);
+
+	/*QPixmap pix = QPixmap::grabWidget(ui->myCanvas);//保存图片
+	QString str = "1.bmp";
+	QString fileName = QFileDialog::getSaveFileName(this, "保存图片", str, "PNG (*.png);;BMP (*.bmp);;JPEG (*.jpg *.jpeg)");
+	if (!fileName.isNull())
+	{
+		pix.save(fileName);
+	}*/
+	//this->setStyleSheet("background-color: rgb(255, 255, 255);");
+	connect(ui->Line_Button, &QToolButton::clicked, ui->Canvas, &canvas::To_drawline);//信号
+	connect(ui->Polygon_Button, &QToolButton::clicked, ui->Canvas, &canvas::To_drawpolygon);
+	connect(ui->Bule_Color, &QToolButton::clicked, ui->Canvas, &canvas::Color_bule);
+}
+void Drawer::paintEvent(QPaintEvent *)
+{
 }
 
-MainWindow::~MainWindow()
-{
-	
-}
-void MainWindow::paintEvent(QPaintEvent *)
-{
-	QPixmap pixmap(400, 200);
-	pixmap.fill(QColor(238, 63, 77, 255));//R,G,B值，最后一位255表示不透明，127半透明，0透明
-	QPainter painter(&pixmap);  //QPainter对象
-	QPen pen;
-	Paint p(&painter);
-	p.drawline_DDA(20, 20, 100, 100);
-	pixmap.save("2.bmp");
-}
+
