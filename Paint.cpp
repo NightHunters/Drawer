@@ -156,8 +156,6 @@ void Paint::drawpolygon_Bresenham(int n, int x[], int y[])
 
 void Paint::drawellipse(int x, int y, int rx, int ry)
 {
-	double x1 = x;
-	double y1 = y;
 	bool flag = false;//表示是否rx与ry转换；
 	if (ry > rx)
 	{
@@ -173,7 +171,7 @@ void Paint::drawellipse(int x, int y, int rx, int ry)
 	double ny = ry;
 	double p1 = ry_sq - rx_sq*ry + rx_sq / 4;
 	int mx, my;//用来保存上一次的nx，ny值
-	while (ry_sq*nx < rx_sq*ny)
+	while (ry_sq*nx <= rx_sq*ny)
 	{
 		mx = nx;
 		my = ny;
@@ -241,7 +239,7 @@ double Paint::BEZ(int k, int n, double u)
 }
 void Paint::drawcurse_Bezier(int n, int x[], int y[])
 {
-	for (double u = 0; u <= 1; u += 0.005)
+	for (double u = 0; u <= 1; u += 0.001)
 	{
 		double nx = 0;
 		double ny = 0;
@@ -277,7 +275,7 @@ void Paint::drawcurse_B_spline(int n, int x[], int y[])
 	{
 		double nx = 0;
 		double ny = 0;
-		for (double t = 0; t <= 1; t += 0.01)
+		for (double t = 0; t <= 1; t += 0.001)
 		{
 			nx = F_0_3(t)*x[i] + F_1_3(t)*x[i + 1] + F_2_3(t)*x[i + 2] + F_3_3(t)*x[i + 3];
 			ny = F_0_3(t)*y[i] + F_1_3(t)*y[i + 1] + F_2_3(t)*y[i + 2] + F_3_3(t)*y[i + 3];
