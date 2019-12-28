@@ -10,6 +10,7 @@
 class canvas : public QWidget
 {
 	Q_OBJECT
+
 private:
 	vector<PaintStatus> vec;
 	PaintStatus copy_p;//用来保存临时状态
@@ -30,6 +31,8 @@ public:
 	void copy_status();
 	void calculate_rotate_point();
 	bool is_able_change();//判断当前画布状态是否能被改变
+	void reset();
+	QColor get_color();
 
 
 	void Transform_line(int x, int y);
@@ -63,5 +66,8 @@ public:
 	void Revoke_current();
 
 	//颜色控制
-	void Color_bule();			//蓝色
+	//void Color_bule();			//蓝色
+	//void Color_green();
+	//void Color_red();
+	void Color_change(QColor c);
 };

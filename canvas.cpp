@@ -33,6 +33,23 @@ bool canvas::is_able_change()
 	return false;
 }
 
+void canvas::reset()
+{
+	vec.clear();
+	current_p.refresh();
+	current_p.status = 0;
+	reference_point.x = 0;
+	reference_point.y = 0;
+	captured_point = -5;
+	transform_mode = 0;
+	update();
+}
+
+QColor canvas::get_color()
+{
+	return current_p.color;
+}
+
 
 void canvas::Capture_cursor_line(int x, int y)
 {
@@ -898,10 +915,10 @@ void canvas::Draw_unconfirmed_primitives()
 	}
 }
 
-
-void canvas::Color_bule()
+void canvas::Color_change(QColor c)
 {
-	current_p.color.setRgb(0, 0, 255);
+	current_p.color = c;
+	update();
 }
 
 void canvas::paintEvent(QPaintEvent *)
