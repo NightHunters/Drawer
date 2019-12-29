@@ -17,9 +17,11 @@ private:
 	PaintStatus current_p;
 	QPen pen;
 	int captured_point;		//标记捕获光标的关键点
-	int transform_mode;		//图元变换模式，1：平移，2：旋转，3：缩放，4：控制点
+	int transform_mode;		//图元变换模式，1：平移，2：旋转，3：缩放，4：控制点，5：裁剪
 	Point reference_point;	//辅助基准点
 	Point rotate_point;		//旋转控制点
+	Point clip_point1;
+	Point clip_point2;
 protected:
 	void paintEvent(QPaintEvent *ev);		//画图事件
 	void mousePressEvent(QMouseEvent *ev);	//鼠标事件
@@ -33,7 +35,8 @@ public:
 	bool is_able_change();//判断当前画布状态是否能被改变
 	void reset();
 	QColor get_color();
-
+	void To_clip_line();
+	void Do_the_clip();
 
 	void Transform_line(int x, int y);
 	void Transform_polygon(int x, int y);
@@ -66,8 +69,5 @@ public:
 	void Revoke_current();
 
 	//颜色控制
-	//void Color_bule();			//蓝色
-	//void Color_green();
-	//void Color_red();
 	void Color_change(QColor c);
 };

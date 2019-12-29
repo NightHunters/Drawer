@@ -50,6 +50,94 @@ QColor canvas::get_color()
 	return current_p.color;
 }
 
+void canvas::To_clip_line()
+{
+	if (current_p.status == 30)
+		current_p.status = 40;
+}
+
+void canvas::Do_the_clip()//by_Cohen-Sutherland
+{
+	int xL = clip_point1.x;
+	int yB = clip_point1.y;
+	int xR = clip_point2.x;
+	int yT = clip_point2.y;
+	vector<Point>::iterator it = current_p.vec.begin();
+	double x1 = it->x;
+	double y1 = it->y;
+	double x2 = (it + 1)->x;
+	double y2 = (it + 1)->y;
+	for (int i = 0; i < 4; i++)
+	{
+		int area_code1 = 0, area_code2 = 0;//区域码
+		if (x1 < xL)
+			area_code1 |= 0b0001;
+		if (x1 > xR)
+			area_code1 |= 0b0010;
+		if (y1 < yB)
+			area_code1 |= 0b0100;
+		if (y1 > yT)
+			area_code1 |= 0b1000;
+
+		if (x2 < xL)
+			area_code2 |= 0b0001;
+		if (x2 > xR)
+			area_code2 |= 0b0010;
+		if (y2 < yB)
+			area_code2 |= 0b0100;
+		if (y2 > yT)
+			area_code2 |= 0b1000;
+		if (area_code1 == 0 && area_code2 == 0)//线段完全在窗口内
+		{
+			it->x = int(x1 + 0.5);
+			it->y = int(y1 + 0.5);
+			(it + 1)->x = int(x2 + 0.5);
+			(it + 1)->y = int(y2 + 0.5);
+			current_p.status = 30;
+			update();
+			return;
+		}
+		if ((area_code1 & area_code2) != 0)
+		{
+			Revoke_current();
+			return;
+		}
+		if (area_code1 == 0)//P1与P2交换
+		{
+			double temp = 0;
+			temp = x1;
+			x1 = x2;
+			x2 = temp;
+			temp = y1;
+			y1 = y2;
+			y2 = temp;
+			temp = area_code1;
+			area_code1 = area_code2;
+			area_code2 = temp;
+		}
+		if ((area_code1 & 0b1000) != 0)
+		{
+			x1 = (yT - y1)*(x1 - x2) / (y1 - y2) + x1;
+			y1 = yT;
+		}
+		else if ((area_code1 & 0b0100) != 0)
+		{
+			x1 = (yB - y1)*(x1 - x2) / (y1 - y2) + x1;
+			y1 = yB;
+		}
+		else if ((area_code1 & 0b0010) != 0)
+		{
+			y1 = (xR - x1)*(y1 - y2) / (x1 - x2) + y1;
+			x1 = xR;
+		}
+		else if ((area_code1 & 0b0001) != 0)
+		{
+			y1 = (xL - x1)*(y1 - y2) / (x1 - x2) + y1;
+			x1 = xL;
+		}
+	}
+}
+
 
 void canvas::Capture_cursor_line(int x, int y)
 {
@@ -541,7 +629,9 @@ void canvas::Revoke_current()
 	case 1:
 	case 2:
 	case 30:
-	case 31:current_p.status = -1; break;
+	case 31:
+	case 40:
+	case 41:current_p.status = -1; break;
 	case 4:
 	case 5:
 	case 6:
@@ -913,6 +1003,25 @@ void canvas::Draw_unconfirmed_primitives()
 		delete[] x;
 		delete[] y;
 	}
+	else if (current_p.status == 41)
+	{
+		pen.setColor(current_p.color);
+		Paint p(this);
+		p.setPen(pen);
+		vector<Point>::iterator it = current_p.vec.begin();
+		p.drawline_DDA(it->x, it->y, (it + 1)->x, (it + 1)->y);
+		QPen pen1;       //画外围控制线
+		QPainter p1(this);
+		pen1.setColor(QColor(255, 0, 128));
+		pen1.setStyle(Qt::DashLine);
+		pen1.setWidth(0);
+		p1.setPen(pen1);
+		p1.drawLine(clip_point1.x, clip_point1.y, clip_point1.x, clip_point2.y);
+		p1.drawLine(clip_point1.x, clip_point2.y, clip_point2.x, clip_point2.y);
+		p1.drawLine(clip_point2.x, clip_point2.y, clip_point2.x, clip_point1.y);
+		p1.drawLine(clip_point2.x, clip_point1.y, clip_point1.x, clip_point1.y);
+
+	}
 }
 
 void canvas::Color_change(QColor c)
@@ -1020,6 +1129,12 @@ void canvas::mousePressEvent(QMouseEvent *ev)
 			reference_point.x = ev->x();
 			reference_point.y = ev->y();
 			current_p.status = 39;
+		}
+		else if (current_p.status == 40)
+		{
+			clip_point1.x = ev->x();
+			clip_point1.y = ev->y();
+			current_p.status = 41;
 		}
 	}
 	else if(ev->button() == Qt::RightButton)//右键按下
@@ -1260,6 +1375,12 @@ void canvas::mouseMoveEvent(QMouseEvent *ev)
 		Transform_Bspline(ev->x(), ev->y());
 		update();
 	}
+	else if (current_p.status == 41)
+	{
+		clip_point2.x = ev->x();
+		clip_point2.y = ev->y();
+		update();
+	}
 }
 
 
@@ -1351,6 +1472,10 @@ void canvas::mouseReleaseEvent(QMouseEvent *ev)
 		else if (current_p.status == 39)
 		{
 			current_p.status = 38;
+		}
+		else if (current_p.status == 41)
+		{
+			Do_the_clip();
 		}
 	}
 	else if (ev->button() == Qt::RightButton)

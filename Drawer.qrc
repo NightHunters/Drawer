@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/Drawer"/>
+    <qresource prefix="/">
+        <file>Resources/撤销.png</file>
+        <file>Resources/多边形.png</file>
+        <file>Resources/曲线.png</file>
+        <file>Resources/竖曲线.png</file>
+        <file>Resources/保存.png</file>
+        <file>Resources/撤销.png</file>
+        <file>Resources/清空.png</file>
+        <file>Resources/椭圆形.png</file>
+        <file>Resources/裁剪.png</file>
+        <file>Resources/直线.png</file>
+    </qresource>
+</RCC>

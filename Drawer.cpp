@@ -6,9 +6,6 @@ Drawer::Drawer(QWidget *parent)
 {
 	ui->setupUi(this);
 	setFixedSize(WINDOWS_WIDTH,WINDOWS_HEIGHT);//固定大小
-	/*QPalette palette(ui->myCanvas->palette());//改变背景色
-	palette.setColor(QPalette::Background, Qt::white);
-	ui->myCanvas->setPalette(palette);*/
 	To_change_canvas = 0;
 	Origin_point_canvas.x = 10;
 	Origin_point_canvas.y = 150;
@@ -27,20 +24,13 @@ Drawer::Drawer(QWidget *parent)
 	shadow->setOffset(0);
 	ui->Canvas->setGraphicsEffect(shadow);
 
-	/*QPixmap pix = QPixmap::grabWidget(ui->myCanvas);//保存图片
-	QString str = "1.bmp";
-	QString fileName = QFileDialog::getSaveFileName(this, "保存图片", str, "PNG (*.png);;BMP (*.bmp);;JPEG (*.jpg *.jpeg)");
-	if (!fileName.isNull())
-	{
-		pix.save(fileName);
-	}*/
-	//this->setStyleSheet("background-color: rgb(255, 255, 255);");
 	connect(ui->Line_Button, &QToolButton::clicked, ui->Canvas, &canvas::To_drawline);//信号与槽
 	connect(ui->Polygon_Button, &QToolButton::clicked, ui->Canvas, &canvas::To_drawpolygon);
 	connect(ui->Eclipse_Button, &QToolButton::clicked, ui->Canvas, &canvas::To_draweclipse);
 	connect(ui->Bezier_Button, &QToolButton::clicked, ui->Canvas, &canvas::To_drawcurve_Bezier);
 	connect(ui->Bspline_Button, &QToolButton::clicked, ui->Canvas, &canvas::To_drawcurve_Bspline);
 	connect(ui->Revoke_Button, &QToolButton::clicked, ui->Canvas, &canvas::Revoke_current);
+	connect(ui->Clip_Button, &QToolButton::clicked, ui->Canvas, &canvas::To_clip_line);
 
 	connect(ui->Save_Button, &QToolButton::clicked, this, &Drawer::save_file);
 	connect(ui->Reset_Button, &QToolButton::clicked, this,&Drawer::reset);
@@ -58,6 +48,8 @@ Drawer::Drawer(QWidget *parent)
 	connect(ui->Orange_Color, &QToolButton::clicked, this, &Drawer::Color_orange);
 	connect(ui->Purple_Color, &QToolButton::clicked, this, &Drawer::Color_purple);
 	connect(ui->Yellow_Color, &QToolButton::clicked, this, &Drawer::Color_yellow);
+	connect(ui->Black_Color, &QToolButton::clicked, this, &Drawer::Color_black);
+	connect(ui->Pink_Color, &QToolButton::clicked, this, &Drawer::Color_pink);
 
 	connect(ui->R_Box, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &Drawer::Color_random);
 	connect(ui->G_Box, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &Drawer::Color_random);
@@ -76,7 +68,7 @@ void Drawer::save_file()
 {
 	QPixmap pix = QPixmap::grabWidget(ui->Canvas);//保存图片
 	QString str = "output.bmp";
-	QString fileName = QFileDialog::getSaveFileName(this, "保存图片", str, "BMP (*.bmp);;PNG (*.png);;JPEG (*.jpg *.jpeg)");
+	QString fileName = QFileDialog::getSaveFileName(this, "Save_Painting", str, "BMP (*.bmp);;PNG (*.png);;JPEG (*.jpg *.jpeg)");
 	if (!fileName.isNull())
 	{
 		pix.save(fileName);
@@ -149,6 +141,26 @@ void Drawer::Color_yellow()
 	ui->R_Box->setValue(255);
 	ui->G_Box->setValue(255);
 	ui->B_Box->setValue(0);
+}
+
+void Drawer::Color_black()
+{
+	QColor c(0, 0, 0);
+	ui->Current_Color->update_color(c);
+	ui->Canvas->Color_change(c);
+	ui->R_Box->setValue(0);
+	ui->G_Box->setValue(0);
+	ui->B_Box->setValue(0);
+}
+
+void Drawer::Color_pink()
+{
+	QColor c(255, 174, 201);
+	ui->Current_Color->update_color(c);
+	ui->Canvas->Color_change(c);
+	ui->R_Box->setValue(255);
+	ui->G_Box->setValue(174);
+	ui->B_Box->setValue(201);
 }
 
 void Drawer::Color_random(int value)

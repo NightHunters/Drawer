@@ -21,7 +21,6 @@ class Drawer : public QMainWindow
 
 public:
 	Drawer(QWidget *parent = Q_NULLPTR);
-	//void show_pen_color();
 	void save_file();
 	void reset();
 	void Color_red();
@@ -30,6 +29,8 @@ public:
 	void Color_orange();
 	void Color_purple();
 	void Color_yellow();
+	void Color_black();
+	void Color_pink();
 	void Color_random(int value);
 protected:
 	void paintEvent(QPaintEvent *);
@@ -38,8 +39,6 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *ev);
 private:
 	Ui::DrawerClass *ui;
-	//bool Change_canvas_size;
-	//QColor canvas_color;
 	int To_change_canvas;
 	Point Origin_point_canvas;
 	int Max_canvas_x;
